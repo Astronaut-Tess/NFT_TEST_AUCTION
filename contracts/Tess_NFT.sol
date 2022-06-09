@@ -21,7 +21,7 @@ contract DataNFT is ERC721URIStorage {
     //카운터 변수 설정
     uint public currentNftCount;
     // count로 nft찾아줄거야
-    mapping(uint => NftData)public nftStorage;
+    mapping(uint => NftData)public nftDataStorage;
 
     //owner찾아줄거
     mapping(uint =>address[])public ownerShipTrans;
@@ -64,7 +64,7 @@ contract DataNFT is ERC721URIStorage {
           //true로 변환
           tokenURIExists[_tokenURI] = true;
           //NFT STROGE에 모든걸 넣을거여
-           nftStorage[currentNftCount] = newNftData;
+           nftDataStorage[currentNftCount] = newNftData;
     }
     //index를 인자값으로 받아 NftData memory nftData 를 반환
        function getNftByIndex(uint256 index)
@@ -73,11 +73,63 @@ contract DataNFT is ERC721URIStorage {
         returns (NftData memory nftData)
     {
         require(_exists(index), "index not exist");
-        return nftStorage[index];
+        return nftDataStorage[index];
+    }
+    //상태 변경해줄거임 //0은 아무상태아님 //1은 경매중 //2는 판매중으로 할거임
+    function updateStatus(uint _tokenID,Status status)
+    internal
+    returns(bool)
+    {
+        NftData storage nftData = nftDataStorage[_tokenID];
+        nftData.status = status;
+        return true;
+    }
+    //소유자도 변경해줄거임
+    //업데이트가 완료대면 트루를 반환
+    function updateOwner(uint _tokenID,address newOwner)
+    internal
+    returns(bool)
+    {
+        //nft를 찾을거
+        NftData storage nftData = nftDataStorage[_tokenID];
+        ownerShipTrans[_tokenID].push(nftData.currentOwner);
+        //새로받은 오너를 넣어줄거야
+        nftData.currentOwner =  newOwner;
+        nftData.transferTime +=1;
+
+        _transfer(ownerOf(_tokenID), newOwner, _tokenID);
+        return true;
+    }
+    //가격도 변경
+    function updatePrice(uint256 _tokenID,uint256 newPrice)
+    internal 
+    returns(bool)
+    {
+        NftData storage nftData = nftDataStorage[_tokenID];
+        if(nftData.highestBidPrice < newPrice){
+            nftData.highestBidPrice = newPrice;
+            return true;
+        }
+        return false;
+
+    }
+    //토큰의 현재주인이 누군지 확인만
+    function getTokenOwner(uint _tokenID)external view returns (address){
+        return ownerOf(_tokenID);
+    }
+    //토큰의 해시값이 먼지 확인
+    function getTokenURI(uint256 _tokenID)
+    external
+    view
+    returns (string memory)
+    {
+        NftData memory nftData = nftDataStorage[_tokenID];
+        return nftData.tokenURI;
     }
 
-
-
+    function getOwnedNumber(address owner)external view returns(uint256){
+        return balanceOf(owner);
+    }
 
 
 
