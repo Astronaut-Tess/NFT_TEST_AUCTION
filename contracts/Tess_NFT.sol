@@ -66,6 +66,16 @@ contract DataNFT is ERC721URIStorage {
           //NFT STROGE에 모든걸 넣을거여
            nftStorage[currentNftCount] = newNftData;
     }
+    //index를 인자값으로 받아 NftData memory nftData 를 반환
+       function getNftByIndex(uint256 index)
+        internal
+        view
+        returns (NftData memory nftData)
+    {
+        require(_exists(index), "index not exist");
+        return nftStorage[index];
+    }
+
 
 
 
