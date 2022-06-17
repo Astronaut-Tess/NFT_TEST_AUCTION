@@ -91,7 +91,7 @@ contract NftDataAuction is DataNFT{
               bidInfo[auctionID][msg.sender] = newBid;
         return true;
     }
-
+    
     function endAuction(uint256 auctionID) external returns (bool success) {
         require(
             ownerOf(auctionID) == msg.sender,

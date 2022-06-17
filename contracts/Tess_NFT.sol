@@ -4,7 +4,7 @@ import "../node_modules/@openzeppelin/contracts/token/ERC721/extensions/ERC721UR
 //함수 하나 이상 잇어야 에러 안나지
 contract DataNFT is ERC721URIStorage {
      enum Status {
-        OffBid, OnBid, WaittingClaim
+         OffBid, OnBid, OnBuy,WaittingClaim 
     }
     //NFT데이터 설정
     struct NftData{
@@ -37,7 +37,7 @@ contract DataNFT is ERC721URIStorage {
         string memory _name,
         string memory _tokenURI
     )internal returns (uint256){
-        //민트 함수 실행하면 id 카운터 하나 올릴거여
+        //민트 함수 실행하면 id z카운터 하나 올릴거여
       currentNftCount++;
       //currentNftCount가 아니면 에러를 발생시킬거여
       require(!_exists(currentNftCount), "ImageID repeated.");
@@ -78,11 +78,20 @@ contract DataNFT is ERC721URIStorage {
     //상태 변경해줄거임 //0은 아무상태아님 //1은 경매중 //2는 판매중으로 할거임
     function updateStatus(uint _tokenID,Status status)
     internal
-    returns(bool)
+    returns(uint256 index2)
     {
         NftData storage nftData = nftDataStorage[_tokenID];
         nftData.status = status;
-        return true;
+        if(nftData.status == Status.OffBid ){
+           return 0;
+        }else if(nftData.status == Status.OnBid){
+            return 1; 
+        }else if(nftData.status == Status.OnBuy){
+            return 2; 
+        }else {
+            return 3;
+        }
+       
     }
     //소유자도 변경해줄거임
     //업데이트가 완료대면 트루를 반환
