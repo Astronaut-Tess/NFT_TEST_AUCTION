@@ -1,5 +1,5 @@
-const Migrations = artifacts.require("Migrations");
+const NFTItem1155 = artifacts.require("NFTItem1155");
 
-module.exports = function (deployer) {
-  deployer.deploy(Migrations);
+module.exports = async function (deployer2, network, accounts) {
+  await deployer2.deploy(NFTItem1155);
 };
