@@ -34,7 +34,7 @@ contract DataNFT is ERC1155, ERC1155Holder, Ownable {
     mapping(string => bool) internal tokenURIExists;
 
     //NFT개수 카운터 할거여
-    constructor() ERC721("Image Collection", "NFT") {
+    constructor() ERC1155("Image Collection", "NFT") {
         currentNftCount = 0;
     }
 
@@ -50,9 +50,9 @@ contract DataNFT is ERC1155, ERC1155Holder, Ownable {
         //tokenURIExists 이게 false면 에러를 발생시킬거여
         require(!tokenURIExists[_tokenURI], "Token URI repeated.");
         //ID값으로 민트
-        _safeMint(to, currentNftCount);
+        _mint(to, currentNftCount);
         //ID에 해당대는 토큰값저장
-        _setTokenURI(currentNftCount, _tokenURI);
+        _setURI(currentNftCount, _tokenURI);
 
         //새 NFT(구조체)를 만들고 새 값을 전달할거여
 
@@ -113,7 +113,7 @@ contract DataNFT is ERC1155, ERC1155Holder, Ownable {
         nftData.currentOwner = newOwner;
         nftData.transferTime += 1;
 
-        _transfer(ownerOf(_tokenID), newOwner, _tokenID);
+        (ownerOf(_tokenID), newOwner, _tokenID);
         return true;
     }
 
