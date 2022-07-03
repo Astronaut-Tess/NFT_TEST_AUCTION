@@ -4,9 +4,8 @@ pragma solidity ^0.8.0;
 import "./ImageNFT.sol";
 
 contract ImageAuction is ImageNFT {
-    struct BidInfo {
-        address bidder;
-        uint256 bidValue;
+    struct Bidder {
+        address payable addr;
     }
 
     struct Auction {
@@ -17,8 +16,7 @@ contract ImageAuction is ImageNFT {
         uint256 endTime;
         bool ended;
         bool claimed;
-        address[] bidsInOrder;
-        uint256[] places;
+        address[] bidders;
     }
     mapping(address => uint256) public pendingReturns; // 차순위 가격들을 등록하는 테이블(환불 처리를 위한)
     mapping(uint256 => Auction) public auctions;
@@ -59,8 +57,8 @@ contract ImageAuction is ImageNFT {
         newAuction.ended = false;
         newAuction.claimed = false;
 
-        // Auction memory newAuction = Auction(
-        //     _tokenID,
+        // newAuction.bidders = _tokenID;
+        //     _tokenID, // Auction memory newAuction = Auction(
         //     _minBid,
         //     _minBid,
         //     payable(msg.sender),
@@ -96,8 +94,9 @@ contract ImageAuction is ImageNFT {
         // 즉, B => 40이 되어야함
         pendingReturns[auction.winner] += auction.highestBid;
         bidInfo[auctionID][msg.sender] += newBid;
-        auction.bidsInOrder.push(msg.sender);
-        auction.places.push(newBid);
+        // auction.bidders.push(
+        //     Bidder(payable(msg.sender), msg.value, block.timestamp)
+        // );
         auction.winner = payable(msg.sender);
         auction.highestBid = newBid;
         // 새로운 최고 입찰 금액 로그 기록
