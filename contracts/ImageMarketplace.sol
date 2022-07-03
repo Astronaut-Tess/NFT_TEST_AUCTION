@@ -2,8 +2,10 @@
 pragma solidity ^0.8.0;
 
 import "./ImageNFT.sol";
+import "./ImageNFTAuction.sol";
+import "./ImageNFTMart.sol";
 
-contract ImgMarketplace is ImageNFT {
+contract ImageMarketplace is ImageAuction, ImageMart {
     address internal IMAGE_NFT_MARKETPLACE;
 
     function mintImageNFT(
