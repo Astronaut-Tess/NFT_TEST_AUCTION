@@ -5,7 +5,8 @@ import "./ImageNFT.sol";
 
 contract ImageAuction is ImageNFT {
     struct Bidder {
-        uint256 addr;
+        address addr;
+        uint256 amount;
     }
 
     struct Auction {
@@ -18,6 +19,7 @@ contract ImageAuction is ImageNFT {
         bool claimed;
         uint256[] bidders;
     }
+    mapping(uint256 => Bidder[]) internal _bidders;
     mapping(address => uint256) public pendingReturns; // 차순위 가격들을 등록하는 테이블(환불 처리를 위한)
     mapping(uint256 => Auction) public auctions;
     event HighestBidIncreased(address bidder, uint256 amount); // 가장 높게 응찰한 금액과 구매자를 블록체인 로그에 기록
@@ -92,8 +94,10 @@ contract ImageAuction is ImageNFT {
         // B가 다시 입찰시 A는 차순위로 밀려 테이블에 기록이 됨 A => 20
         // 마지막으로 A가 입찰시 B는 차순위로 밀려 테이블에 기록이되는데 기존 금액에 추가가 되어야하므로 +=를 사용하여 매핑
         // 즉, B => 40이 되어야함
-        pendingReturns[auction.winner] += auction.highestBid;
-        bidInfo[auctionID][msg.sender] += newBid;
+        Bidder memory bidder = Bidder({addr: msg.sender, amount: newBid});
+
+        _bidders[auctionID].push(bidder);
+
         // auction.bidders.push(Bidder(auctionID));
         auction.winner = payable(msg.sender);
         auction.highestBid = newBid;
